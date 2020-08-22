@@ -1,0 +1,41 @@
+/*
+问题描述
+　　给定n个正整数，找出它们中出现次数最多的数。如果这样的数有多个，请输出其中最小的一个。
+输入格式
+　　输入的第一行只有一个正整数n(1 ≤ n ≤ 1000)，表示数字的个数。
+　　输入的第二行有n个整数s1, s2, …, sn (1 ≤ si ≤ 10000, 1 ≤ i ≤ n)。相邻的数用空格分隔。
+输出格式
+　　输出这n个次数中出现次数最多的数。如果这样的数有多个，输出其中最小的一个。
+样例输入
+6
+10 1 10 20 30 20
+样例输出
+10
+*/
+#include<iostream>
+#include<map>
+using namespace std;
+
+int main(){
+	int n,num,time;
+	map<int,int> m;
+	cin>>n;
+	for(int i=1; i<=n; i++){
+		cin>>num;
+		m[num]++;
+	}
+	map<int,int>:: iterator p = m.begin();
+	int max = 0, ans = 10000;
+	for(p;p!=m.end();p++){
+		if(p->second >= max && p->first < ans){
+			ans = p->first;
+			max = p->second;
+		}
+	}
+	cout<<ans<<endl;
+	return 0;
+} 
+/*思路一：因为数据量和范围都比较小，可以用数组，开一个大小10001的数组，数组的下标就表示输入的数字，对应的数组元素表示出现的次数，这样在输入的过程中就顺便统计了次数，
+然后把这个数组里最大元素找到，输出下标即可。但是这种方法仅限于小数据量
+思路二：使用c++ STL 的map，map的每一个元素都是键值对的形式，key存数字，value存次数，就不需要每次开一个10000的数组，输入多少开多少就行了。然后遍历map找value最大的那个，输出key即可
+*/
