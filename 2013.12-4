@@ -89,7 +89,7 @@ f(n,0) = 1
 #define PRIME 1000000007
 using namespace std;
 int main(){
-	long long n;
+	int n;
 	cin>>n;
 	long long f[1001][6] = {0};//因为n最大为1000，6种状态， f(n,6)最大需要1001*6的数组存储 注意到数字的范围超过了int，建议用long 
 	for(int i = 1; i <= n; i++){  
