@@ -27,7 +27,11 @@ int main(){
 	map<int,int>:: iterator p = m.begin();
 	int max = 0, ans = 10000;
 	for(p;p!=m.end();p++){
-		if(p->second >= max && p->first < ans){
+		if(p->second >= max){
+			ans = p->first;
+			max = p->second;
+		}
+		if(p->second == max && p->first < ans){
 			ans = p->first;
 			max = p->second;
 		}
