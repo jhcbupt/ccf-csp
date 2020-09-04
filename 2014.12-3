@@ -1,0 +1,100 @@
+/*
+问题描述
+　　某股票交易所请你编写一个程序，根据开盘前客户提交的订单来确定某特定股票的开盘价和开盘成交量。
+　　该程序的输入由很多行构成，每一行为一条记录，记录可能有以下几种：
+　　1. buy p s 表示一个购买股票的买单，每手出价为p，购买股数为s。
+　　2. sell p s 表示一个出售股票的卖单，每手出价为p，出售股数为s。
+　　3. cancel i表示撤销第i行的记录。
+　　如果开盘价为p0，则系统可以将所有出价至少为p0的买单和所有出价至多为p0的卖单进行匹配。因此，此时的开盘成交量为出价至少为p0的买单的总股数和所有出价至多为p0的卖单的总股数之间的较小值。
+　　你的程序需要确定一个开盘价，使得开盘成交量尽可能地大。如果有多个符合条件的开盘价，你的程序应当输出最高的那一个。
+输入格式
+　　输入数据有任意多行，每一行是一条记录。保证输入合法。股数为不超过108的正整数，出价为精确到恰好小数点后两位的正实数，且不超过10000.00。
+输出格式
+　　你需要输出一行，包含两个数，以一个空格分隔。第一个数是开盘价，第二个是此开盘价下的成交量。开盘价需要精确到小数点后恰好两位。
+样例输入
+buy 9.25 100
+buy 8.88 175
+sell 9.00 1000
+buy 9.00 400
+sell 8.92 400
+cancel 1
+buy 100.00 50
+样例输出
+9.00 450
+评测用例规模与约定
+　　对于100%的数据，输入的行数不超过5000。
+*/
+#include<iostream>
+#include<string>
+#include<set>
+#include<cstdio> 
+#include<algorithm>
+using namespace std;
+
+typedef struct record{
+	string operation;//字符串 
+	double price;//价格 
+	long long num;//股数 为什么用longlong？题目范围里的数目在int范围内（int范围大致为3*10^10），但最后的结果是求和，用longlong保险一点，不然可能结果超过int了 
+	bool isvalid = true;//是否被取消 !!!注意c++中bool变量如果不初始化，它的值是随机的，根据编译器而定 
+}record;
+//记住用结构体来存储复杂的输入 
+record r[5001];
+/*
+ 关键是对p0的选取，这里p0一定是有效的买单或卖单里的p。
+理由：
+    若p0不是买单或卖单里的p，那么p0必然介于某两个出价p之间，设为 p1 和 p2，即 p1 < p0 < p2;
+1.当买单和卖单里都有p2时，这时若以p0为单价，则必然会使卖单减少，由于成交量是取小的，所以成交量也会减小，就不如开盘价为p2是的好；
+2.当只有买单有p2，和开盘价为p2时一样，所以开盘价不会是这个p0;
+3.当只有卖单有p2，情况和 1 相同； 
+4.当买单和卖单里都有p1时或只有买单有p1时，若以p0为单价，则会使买单减少，继而成交量减小，不如开盘价为p1；
+5.当只有卖单有p1时，这时和开盘价为p1时是一样的，此时p0优于p1，但是p2则必然优于p0；由于买单是没有p1，所以此时对于p1,p0,p2买单的成交量都一样，而卖单的成交量p1和p0相同，p2则大于等于p1和p0；
+*/
+//分析出p0只能在已有的p中取值非常重要 
+int main(){
+/*	while(cin>>s != ""){
+		v.push_back(s);  这就不对了，cin不能读带空格的，如果这样每次就只能读到前面的单词 
+	}
+*/	
+    int m = 1;//数组下标 ,从1开始存放数据方便一点 
+    while(cin>>r[m].operation){
+    	if(r[m].operation == "cancel"){
+    		cin>>r[m].num;
+    		r[r[m].num].isvalid = false;
+    		m++;
+    		continue;
+		}
+		cin>>r[m].price>>r[m].num;
+		r[m].isvalid = true;
+		m++;
+	}
+	set<double> s;//set和map一样能自动排序，由于分析过p0的值一定是在输入的值中取，就先遍历一遍取出所有的price放入set，自动从小到大排序 
+	for(int i = 1; i <= m; i++){//把所有buy和sell的有效价格取出来 
+		if(r[i].isvalid && r[i].operation != "cancel") 
+		s.insert(r[i].price);
+	}
+	set<double>::iterator p = s.begin();
+	double temp = 0;
+	long long sumbuy = 0,sumsell = 0; //对每一个可能的p0，buy和sell的数量之和 
+	long long max_ = 0, sum;
+	for(p; p != s.end(); p++){
+		sumbuy = 0; //每次都要记得从0开始 
+		sumsell = 0; 
+		for(int i = 1; i <= m; i++){ //遍历s取每一个price 
+			if(r[i].isvalid && r[i].operation == "buy" && r[i].price >= (*p)){
+				sumbuy += r[i].num;
+			}
+			if(r[i].isvalid && r[i].operation == "sell" && r[i].price <= (*p)){
+				sumsell += r[i].num;
+			}
+		}
+		sum = min(sumbuy, sumsell);//取这两个的较小值 
+		if(sum >= max_){//记录min和取到最小值的位置 
+			max_ = sum;
+			temp = *p;
+		}
+	}
+	printf("%.2lf",temp);
+	cout<<" "<<max_<<endl;
+	cin.get();
+	return 0;
+}
