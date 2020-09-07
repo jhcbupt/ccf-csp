@@ -1,0 +1,90 @@
+#include<iostream>
+
+using namespace std;
+
+typedef struct point{
+	int x,y;
+	char category;
+}point;
+
+typedef struct line{
+	int theta0,theta1,theta2;
+}line;
+
+point p[1001];
+line l[21];
+
+int main(){
+	int m,n;
+	char c;
+	bool ap,an,bp,bn;//A正负/B正负 
+	cin>>n>>m; //n是点数，m是查询数
+	for(int i = 0; i < n; i++){
+		cin>>p[i].x>>p[i].y>>p[i].category;
+	}
+	for(int i = 0; i < m; i++){
+		cin>>l[i].theta0>>l[i].theta1>>l[i].theta2;
+	}
+	if(l[0].theta0 + l[0].theta1 * p[0].x + l[0].theta2 * p[0].y > 0 && p[0].category == 'A'){
+		ap = true;
+		bn = true;
+	}
+	if(l[0].theta0 + l[0].theta1 * p[0].x + l[0].theta2 * p[0].y > 0 && p[0].category == 'B'){
+		an = true;
+		bp = true;
+	}
+	if(l[0].theta0 + l[0].theta1 * p[0].x + l[0].theta2 * p[0].y < 0 && p[0].category == 'A'){
+		an = true;
+		bp = true;
+	}
+	if(l[0].theta0 + l[0].theta1 * p[0].x + l[0].theta2 * p[0].y < 0 && p[0].category == 'B'){
+		ap = true;
+		bn = true;
+	}
+	bool flag = true;
+	if(ap){
+		for(int i = 0; i < m; i++){
+		    for(int j = 0; j < n; j++){
+		    	if(l[i].theta0 + l[i].theta1 * p[j].x + l[i].theta2 * p[j].y > 0 && p[0].category == 'A'){
+		    		continue;
+				}
+				else if(l[i].theta0 + l[i].theta1 * p[j].x + l[i].theta2 * p[j].y < 0 && p[0].category == 'B'){
+					continue;
+				}
+				else{
+					flag = false;
+					break;
+				}
+		    }
+	    }
+	    if(flag){
+	    	cout<<"Yes"<<endl;
+		}
+		else{
+			cout<<"No"<<endl;
+		}
+	} 
+	else{
+		for(int i = 0; i < m; i++){
+		    for(int j = 0; j < n; j++){
+		    	if(l[i].theta0 + l[i].theta1 * p[j].x + l[i].theta2 * p[j].y < 0 && p[0].category == 'A'){
+		    		continue;
+				}
+				else if(l[i].theta0 + l[i].theta1 * p[j].x + l[i].theta2 * p[j].y > 0 && p[0].category == 'B'){
+					continue;
+				}
+				else{
+					flag = false;
+					break;
+				}
+		    }
+	    }
+	    if(flag){
+	    	cout<<"Yes"<<endl;
+		}
+		else{
+			cout<<"No"<<endl;
+		}
+	}
+	return 0;
+} 
