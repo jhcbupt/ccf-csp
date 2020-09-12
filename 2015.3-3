@@ -1,0 +1,55 @@
+
+#include<iostream>
+#include<string>
+using namespace std;
+
+bool isleapyear(int y){
+	if(y % 400 || (y % 4 == 0 && y % 100 != 0)){
+		return true;
+	}
+	return false;
+}
+
+int calculateWeekDay(int y, int m, int d){
+	if(m == 1 || m == 2){
+		m += 12;
+		y--;
+	}
+	return (d + 2 * m + 3 * (m + 1) / 5 + y + y / 4 - y / 100 + y / 400) % 7 + 1;
+}
+
+int main(){
+	
+	int a,b,c,y1,y2;
+	cin>>a>>b>>c>>y1>>y2;
+	int mon[13] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	
+	for(int y = y1; y <= y2; y++){
+		mon[2] = isleapyear(y) ? 29:28;
+		int week = calculateWeekDay(y, a, 1); //y年a月1号是星期 week 
+		int ans;   
+        if(c >= week){
+        	ans = c - week + 7 * (b - 1) + 1;
+		}
+		else{
+			ans = 7 * b + c - week + 1;
+		}
+		if(ans > mon[a]){
+			cout<<"none"<<endl;
+		}
+		else{
+			string mon = to_string(a);
+			string day = to_string(ans);
+			if(a < 10){
+				mon = "0" + to_string(a);
+			}
+			if(ans < 10){
+				day = "0" + to_string(ans);
+			}
+			cout<<y<<"/"<<mon<<"/"<<day<<endl;
+		}
+	}
+	
+	cin.get();
+	return 0;
+}
