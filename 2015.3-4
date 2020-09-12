@@ -1,0 +1,44 @@
+/*
+
+*/
+//这道题求的是树的直径，树的直径即最远的两个节点之间的距离，有两种求法，第一种是两次DFS，第一次从任一点出发DFS到离它最远的点，第二次从该点出发DFS到离它最远的点即为所求
+#include<iostream>
+#include<vector>
+#include<string.h> //memset的头文件
+
+using namespace std;
+
+vector<int> tree [20001]; //相当于邻接矩阵，用来存储树，tree[i]里存储和i相连的点
+int visit[20001];
+
+int ansv = -1, anslevel = 0; //用来记录第一次到达的点和最远距离
+
+void DFS(int v, int level){
+	visit[v] = 1;
+	if(level > anslevel){
+		ansv = v;
+		anslevel = level;
+	}
+	for(int i : tree[v]){ //c++11引入的，方便的遍历数组，i是下标
+		if(!visit[i]){
+			DFS(i,level + 1);
+		}
+	}
+}
+
+int main(){
+	int n, m, a;
+	cin>>n>>m;
+	for(int i = 2; i <= m + n; i++){
+		cin>>a;
+		tree[i].push_back(a);
+		tree[a].push_back(i);
+	}
+	DFS(1,0);
+	memset(visit, 0, sizeof(visit));
+	DFS(ansv, 0);
+	cout<<anslevel<<endl;
+	
+	cin.get();
+	return 0;
+}
